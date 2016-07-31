@@ -1,0 +1,144 @@
+<link rel="import" href="../polymer/polymer.html">
+
+<!--
+`hot-deep-target-behavior`
+Hot target
+
+@demo demo/index.html
+-->
+
+<script>
+
+
+  Polymer.DomApi.prototype.queryDistributedElementsDeep = function( selectors, firstOnly, doNotVisitSelector ){
+    var list = [];
+    var quitVisit = false;
+
+    if( ! Array.isArray( selectors ) ) selectors = [ selectors ];
+
+    function visit( node ){
+
+      if( quitVisit ) return;
+
+      var c$ = Polymer.dom( node ).getEffectiveChildNodes();
+      for( var i = 0, l = c$.length, c; (i < l), ( c = c$[ i ] ); i ++ ){
+        if (c.nodeType === Node.ELEMENT_NODE ){
+
+          // If one of the selectors matches, add it to the results
+          for( var j = 0, ll = selectors.length, s; ( j < ll ), ( s = selectors[ j ] ); j ++){
+            if( Polymer.DomApi.matchesSelector.call( c, s ) ){
+              list.push( c );
+
+              // If only the first one is to be found,
+              if( firstOnly ) {
+                quitVisit = 1;
+                return;
+              }
+
+            }
+          }
+
+          // Visit element's children, unless it matches doNotvisitSelector
+          if( !doNotVisitSelector || !Polymer.DomApi.matchesSelector.call( c, doNotVisitSelector ) ){
+            visit( c );
+          }
+        }
+      }
+    }
+    visit( this );
+    return firstOnly ? list[ 0 ] : list;
+
+  }
+
+  Polymer.Base.queryEffectiveChildrenDeep = function( slctr, excludeSlctr ){
+    return Polymer.dom( this ).queryDistributedElementsDeep( slctr, true, excludeSlctr );
+  }
+
+  Polymer.Base.queryAllEffectiveChildrenDeep = function( slctr, excludeSlctr ){
+    return Polymer.dom( this ).queryDistributedElementsDeep( slctr, false, excludeSlctr );
+  }
+
+  window.Hotplate = window.Hotplate || {};
+
+
+    window.Hotplate.DeepTargetBehavior = {
+
+      properties: {
+
+        targetId: {
+          type: String
+        },
+
+        _target: {
+          type: Object,
+        },
+
+        excludeSelector: {
+          type: String
+        }
+
+      },
+
+      ready: function(){
+
+        if( this.targetId ){
+          this._target = this.queryEffectiveChildrenDeep( '#' + this.targetId, this.excludeSelector )
+        }
+      }
+    }
+
+  window.Hotplate.DeepSelectorsBehavior = {
+
+    properties: {
+
+      targetSelectors: {
+        type: String
+      },
+
+      _target: {
+        type: Object,
+      },
+
+      excludeSelector: {
+        type: String
+      }
+
+    },
+
+    ready: function(){
+      if( this.targetSelectors ){
+        this._target = this.queryEffectiveChildrenDeep( this.targetSelectors, this.excludeSelector )
+      }
+    }
+  }
+
+  window.Hotplate.DeepAllSelectorsBehavior = {
+
+    properties: {
+
+
+      targetSelectors: {
+        type: String
+      },
+
+      _targets: {
+        type: Object,
+        value: function(){ return []; }
+      },
+
+      excludeSelector: {
+        type: String
+      }
+
+    },
+
+    ready: function(){
+
+      if( this.targetSelectors ){
+        this._targets = this.queryAllEffectiveChildrenDeep( this.targetSelectors.split(';'),this.excludeSelector );
+      }
+    }
+
+  }
+
+</script>

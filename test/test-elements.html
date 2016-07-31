@@ -1,0 +1,46 @@
+
+<dom-module id="test-deep-target">
+
+  <template>
+    <content></content>
+  </template>
+
+  <script>
+    Polymer({
+      is: 'test-deep-target',
+      behaviors: [ Hotplate.DeepTargetBehavior ],
+    })
+  </script>
+</dom-module>
+
+
+
+<dom-module id="test-deep-selectors">
+
+  <template>
+    <content></content>
+  </template>
+
+  <script>
+    Polymer({
+      is: 'test-deep-selectors',
+      behaviors: [ Hotplate.DeepSelectorsBehavior ],
+    })
+  </script>
+
+</dom-module>
+
+
+<dom-module id="test-deep-all-selectors">
+
+  <template>
+    <content></content>
+  </template>
+
+  <script>
+    Polymer({
+      is: 'test-deep-all-selectors',
+      behaviors: [ Hotplate.DeepAllSelectorsBehavior ],
+    })
+  </script>
+</dom-module>

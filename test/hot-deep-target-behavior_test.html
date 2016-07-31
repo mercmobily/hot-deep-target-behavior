@@ -1,0 +1,147 @@
+<!doctype html>
+
+<html>
+  <head>
+    <title>hot-deep-target-behavior test</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, minimum-scale=1.0, initial-scale=1, user-scalable=yes">
+    <script src="../../webcomponentsjs/webcomponents-lite.js"></script>
+    <script src="../../web-component-tester/browser.js"></script>
+
+    <link rel="import" href="../hot-deep-target-behavior.html">
+    <link rel="import" href="test-elements.html"
+  </head>
+  <body>
+
+    <test-fixture id="basic">
+      <template>
+        <test-element></test-element>
+      </template>
+    </test-fixture>
+
+    <test-fixture id="test-deep-target">
+      <template>
+        <test-deep-target target-id="one">
+
+          <div>
+            <p>Lipso</p>
+            <p>Lorem</p>
+            <div>
+              <div id="one">
+                <div>
+                  <span id="one"></span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+        </test-deep-target>
+      </template>
+    </test-fixture>
+
+    <test-fixture id="test-deep-selectors">
+      <template>
+        <test-deep-selectors target-selectors=".found">
+
+          <div>
+            <p>Lipso</p>
+            <p>Lorem</p>
+            <div id="zero">
+              <div id="one">
+                <div>
+                  <span id="two"></span>
+                  <div class="found" id="three"></div>
+                  <div class="found" id="four"></div>
+                </div>
+              </div>
+              <div id="five" class="found"></div>
+            </div>
+          </div>
+
+        </test-deep-selectors>
+      </template>
+    </test-fixture>
+
+    <test-fixture id="test-deep-all-selectors">
+      <template>
+        <test-deep-all-selectors target-selectors="#one;#two;span">
+
+          <div>
+            <p>Lipso</p>
+            <p>Lorem</p>
+            <div>
+              <div id="one">
+                <div>
+                  <span id="two"></span>
+                  <div id="three"></div>
+                  <div id="four"></div>
+                </div>
+              </div>
+              <div id="five"></div>
+            </div>
+          </div>
+
+        </test-deep-all-selectors>
+      </template>
+    </test-fixture>
+
+
+    <test-fixture id="test-deep-all-selectors-with-excluded">
+      <template>
+        <test-deep-all-selectors exclude-selector="#excluded" target-selectors="#one;#two;#five">
+
+          <div>
+            <p>Lipso</p>
+            <p>Lorem</p>
+            <div>
+              <div id="one">
+                <div id="excluded">
+                  <span id="two"></span>
+                  <div id="three"></div>
+                  <div id="four"></div>
+                </div>
+              </div>
+              <div id="five"></div>
+            </div>
+          </div>
+
+        </test-deep-all-selectors>
+      </template>
+    </test-fixture>
+
+    <script>
+      suite('hot-deep-target-behavior', function() {
+
+        test('Simple use of test-deep-target', function() {
+          var element = fixture('test-deep-target');
+
+          expect(element._target).not.to.be.a('undefined');
+          expect(element._target.id).to.be.equal('one');
+        });
+
+
+        test('Simple use of test-deep-selectors', function() {
+          var element = fixture('test-deep-selectors');
+
+          expect(element._target.id).to.be.equal( 'three' );
+        });
+
+
+        test('Simple use of test-deep-all-selectors', function() {
+          var element = fixture('test-deep-all-selectors');
+
+          expect(Object.keys( element._targets).length ).to.be.equal( 3 );
+        });
+
+
+        test('Simple use of test-deep-all-selectors with excluded path', function() {
+          var element = fixture('test-deep-all-selectors-with-excluded');
+
+          expect(Object.keys( element._targets).length ).to.be.equal( 2 );
+        });
+
+
+      });
+    </script>
+  </body>
+</html>
